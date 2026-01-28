@@ -1,6 +1,8 @@
 package co.zw.ehailing.ehailing.controller;
 
+import co.zw.ehailing.ehailing.dto.RegisterMotorcycleRequest;
 import co.zw.ehailing.ehailing.dto.UpdateLocationRequest;
+import co.zw.ehailing.ehailing.model.Motorcycle;
 import co.zw.ehailing.ehailing.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +24,13 @@ public class DriverController {
     ) {
         driverService.updateLocation(userDetails.getUsername(), request.getLat(), request.getLng());
         return ResponseEntity.ok("Location updated");
+    }
+
+    @PostMapping("/motorcycle")
+    public ResponseEntity<Motorcycle> registerMotorcycle(
+            @RequestBody RegisterMotorcycleRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ResponseEntity.ok(driverService.registerOrUpdateMotorcycle(userDetails.getUsername(), request));
     }
 }

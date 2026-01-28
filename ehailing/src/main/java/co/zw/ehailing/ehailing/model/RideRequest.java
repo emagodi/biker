@@ -1,6 +1,7 @@
 package co.zw.ehailing.ehailing.model;
 
 import co.zw.ehailing.ehailing.enums.RideRequestStatus;
+import co.zw.ehailing.ehailing.enums.VehicleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +49,10 @@ public class RideRequest {
 
     @Column(name = "suggested_price")
     private Double suggestedPrice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "requested_type")
+    private VehicleType requestedType;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

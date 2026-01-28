@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateRideRequest {
-    private Double pickupLat;
-    private Double pickupLng;
-    private Double destLat;
-    private Double destLng;
-    private VehicleType requestedType;
+public class RegisterMotorcycleRequest {
+    private String plateNumber;
+    private String model;
+    private String color;
+    private String photoUrl;
+    private VehicleType vehicleType;
 }

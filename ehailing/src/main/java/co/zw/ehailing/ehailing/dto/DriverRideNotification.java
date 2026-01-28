@@ -1,5 +1,6 @@
 package co.zw.ehailing.ehailing.dto;
 
+import co.zw.ehailing.ehailing.enums.VehicleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,5 @@ public class DriverRideNotification {
     private Double distance;
     private Double suggestedPrice;
     private Double surgeMultiplier;
+    private VehicleType requestedType;
 }

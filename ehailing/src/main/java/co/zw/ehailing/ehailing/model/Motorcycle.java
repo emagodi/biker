@@ -1,5 +1,6 @@
 package co.zw.ehailing.ehailing.model;
 
+import co.zw.ehailing.ehailing.enums.VehicleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +32,8 @@ public class Motorcycle {
 
     @Column(name = "photo_url")
     private String photoUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_type", nullable = false)
+    private VehicleType vehicleType;
 }

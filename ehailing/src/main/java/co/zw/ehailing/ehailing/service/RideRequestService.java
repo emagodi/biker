@@ -26,6 +26,7 @@ public class RideRequestService {
     private final UserRepository userRepository;
     private final WalletService walletService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final co.zw.ehailing.ehailing.repository.MotorcycleRepository motorcycleRepository;
 
     private static final double BASE_FARE = 2.0;
     private static final double PER_KM_RATE = 1.5;
@@ -60,6 +61,7 @@ public class RideRequestService {
                 .status(RideRequestStatus.REQUESTED)
                 .surgeMultiplier(surge)
                 .suggestedPrice(suggestedPrice)
+                .requestedType(request.getRequestedType())
                 .build();
 
         RideRequest savedRequest = rideRequestRepository.save(rideRequest);
@@ -89,6 +91,11 @@ public class RideRequestService {
                             rideRequest.getPickupLat(), rideRequest.getPickupLng());
                     return dist <= SEARCH_RADIUS_KM;
                 })
+                .filter(d -> {
+                    var motoOpt = motorcycleRepository.findByDriverId(d.getId());
+                    if (rideRequest.getRequestedType() == null) return true;
+                    return motoOpt.map(m -> rideRequest.getRequestedType().equals(m.getVehicleType())).orElse(false);
+                })
                 .toList();
         
         DriverRideNotification notification = DriverRideNotification.builder()
@@ -100,6 +107,7 @@ public class RideRequestService {
                 .distance(rideRequest.getDistance())
                 .suggestedPrice(rideRequest.getSuggestedPrice())
                 .surgeMultiplier(rideRequest.getSurgeMultiplier())
+                .requestedType(rideRequest.getRequestedType())
                 .build();
 
         for (Driver driver : eligibleDrivers) {
