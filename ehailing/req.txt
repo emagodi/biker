@@ -1,0 +1,385 @@
+Love this idea — a motorcycle e-hailing app with bidding is actually a really good fit for markets where bikes are faster + cheaper than cars. 🚲🔥
+Let’s design it properly, step by step, using the stack you chose. I’ll act like your technical co-founder here.
+
+1. High-level Architecture (clean & scalable)
+Tech stack (good choices 👍)
+
+Backend: Spring Boot (Java)
+
+Mobile apps: React Native (Driver + Customer)
+
+Web app: Next.js (Admin + maybe marketing site)
+
+Database: MySQL
+
+Real-time: WebSockets (very important)
+
+Maps & Distance: Google Maps API or Mapbox
+
+Auth: JWT + refresh tokens
+
+Storage: S3-compatible (AWS S3, DigitalOcean Spaces, MinIO)
+
+Payments / Wallet: Mobile money / cards (depends on country)
+
+2. User Roles (clear separation)
+
+You will have 4 main roles:
+
+Customer
+
+Driver (Motorcycle rider)
+
+Admin
+
+System (pricing, bidding, matching logic)
+
+Each role should have separate permissions, even if they share tables.
+
+3. Core Features Breakdown
+A. Driver (Motorcycle) Registration Flow
+
+Driver signs up:
+
+Name
+
+Phone number (OTP verification)
+
+National ID
+
+Driver’s license
+
+Motorcycle details (plate, model, color)
+
+Uploads:
+
+Motorcycle photo
+
+License photo
+
+Profile photo
+
+Account status = PENDING
+
+Admin reviews
+
+Admin approves → status = ACTIVE
+
+Driver must load wallet/points to receive jobs
+
+🔐 Important statuses
+
+PENDING
+
+ACTIVE
+
+SUSPENDED
+
+REJECTED
+
+NO_CREDIT
+
+B. Customer Flow
+
+Customer signs up (phone + OTP)
+
+Sets pickup location (GPS)
+
+Sets destination
+
+App calculates:
+
+Distance
+
+Suggested price (base fare + distance)
+
+Customer sends request
+
+C. Ride Request + Bidding (Your Unique Feature 💡)
+
+This is the heart of your app.
+
+Step-by-step:
+
+Customer sends ride request
+
+Backend:
+
+Finds nearest available drivers (e.g. 5)
+
+Filters:
+
+ACTIVE
+
+Has wallet balance
+
+Online
+
+Request is sent to those drivers via WebSocket
+
+Drivers:
+
+See pickup, destination, distance
+
+Submit their bid price
+
+Customer sees:
+
+List of drivers
+
+Profile pic
+
+Motorcycle pic
+
+Rating
+
+Bid price
+
+Customer selects a driver
+
+Ride is locked
+
+Other drivers are notified → request closed
+
+⏱️ Add a timeout (e.g. 30–60 seconds) for bidding.
+
+4. Distance & Pricing Logic
+Distance
+
+Use:
+
+Google Directions API or
+
+Mapbox Directions API
+
+Calculate:
+
+Distance (km)
+
+Estimated time
+
+Suggested Price (example formula)
+base_fare = 2.00
+price_per_km = 0.50
+
+suggested_price = base_fare + (distance * price_per_km)
+
+
+Customer sees this but drivers can bid up/down.
+
+5. Wallet / Credit System (Very Important)
+Why this is smart
+
+It:
+
+Prevents fake drivers
+
+Creates revenue upfront
+
+Ensures only serious riders are online
+
+Wallet logic
+
+Driver wallet has:
+
+balance
+
+last top-up
+
+Each ride deducts:
+
+flat fee OR
+
+percentage (e.g. 10%)
+
+If balance <= 0:
+
+driver status = NO_CREDIT
+
+no requests sent
+
+Admin controls:
+
+Top-up rates
+
+Promotions (free credits)
+
+Commission %
+
+6. Real-Time Communication (Critical)
+
+You must use WebSockets.
+
+What uses WebSockets:
+
+Driver online/offline status
+
+Driver location updates
+
+Ride requests
+
+Bids
+
+Ride acceptance
+
+Ride status changes
+
+Spring Boot options:
+
+Spring WebSocket (STOMP)
+
+Or plain WebSocket
+
+Redis (later) for scaling
+
+7. Database Design (Core Tables)
+Users
+users
+- id
+- role (CUSTOMER, DRIVER, ADMIN)
+- phone
+- password_hash
+- status
+- created_at
+
+Drivers
+drivers
+- user_id
+- license_number
+- rating
+- wallet_balance
+- online_status
+
+Motorcycles
+motorcycles
+- driver_id
+- plate_number
+- model
+- color
+- photo_url
+
+Ride Requests
+ride_requests
+- id
+- customer_id
+- pickup_lat
+- pickup_lng
+- dest_lat
+- dest_lng
+- distance
+- status (REQUESTED, BIDDING, ACCEPTED, CANCELLED)
+
+Bids
+bids
+- id
+- ride_request_id
+- driver_id
+- price
+- created_at
+
+Rides
+rides
+- id
+- ride_request_id
+- driver_id
+- final_price
+- status (STARTED, COMPLETED)
+
+8. Admin Dashboard (Next.js)
+
+Admin should be able to:
+
+Approve/reject drivers
+
+View rides
+
+Set pricing rules
+
+Manage wallet & commissions
+
+Suspend users
+
+View reports
+
+9. Security & Quality (Don’t Skip This)
+
+Phone OTP verification
+
+JWT + refresh tokens
+
+Rate limiting
+
+Location spoofing detection (basic)
+
+Ride history
+
+Driver ratings
+
+Customer ratings
+
+Cancellation penalties
+
+10. Development Roadmap (Very Important)
+Phase 1 – MVP (Launch Fast)
+
+Customer app
+
+Driver app
+
+Admin approval
+
+Ride request
+
+Bidding
+
+Wallet deduction
+
+Phase 2 – Improve
+
+Ratings
+
+Chat or call masking
+
+Promotions
+
+Surge pricing
+
+Heat maps for drivers
+
+Phase 3 – Scale
+
+Redis
+
+Kafka (optional)
+
+Microservices
+
+Multi-city support
+
+Next step (let’s actually build)
+
+If you want, we can:
+
+Design REST + WebSocket APIs
+
+Design ERD properly
+
+Write Spring Boot project structure
+
+Define React Native screens
+
+Implement driver matching algorithm
+
+👉 Tell me what you want to design next:
+
+API endpoints?
+
+Database ERD?
+
+Driver matching logic?
+
+Wallet system in detail?
+
+Real-time WebSocket flow?
+
+We’ll build this like a real startup, not theory 💪
